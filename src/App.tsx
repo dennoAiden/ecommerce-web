@@ -10,20 +10,18 @@ const App: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   // Fetch products from backend
- fetch('https://ecommerce-web-backend-x9o7.onrender.com/products')
-  .then(res => {
-    if (!res.ok) throw new Error('Failed to fetch products');
-    return res.json();
-  })
-  .then(products => {
-    // check if products is an array
-    if (!Array.isArray(products)) throw new Error('Products is not an array');
-    // set state, render, etc.
-  })
-  .catch(err => {
-    // Show an error message to the user
-    console.error(err);
-  });
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("https://ecommerce-web-backend-x9o7.onrender.com/products"); 
+        const data: Product[] = await res.json();
+        setProducts(data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const openProductDetails = (product: Product) => setSelectedProduct(product);
   const closeProductDetails = () => setSelectedProduct(null);
