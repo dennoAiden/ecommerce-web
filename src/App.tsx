@@ -13,7 +13,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("https://ecommerce-web-1-vlvp.onrender.com/products"); 
+        const res = await fetch("https://ecommerce-web-li75.onrender.com/products"); 
         const data: Product[] = await res.json();
         setProducts(data);
       } catch (error) {

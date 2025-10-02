@@ -37,7 +37,7 @@ export const CartProvider: React.FC<{ children: ReactNode; setProducts: React.Di
 
   const updateStockBackend = async (productId: number, quantityChange: number) => {
     try {
-      const res = await fetch(`https://ecommerce-web-1-vlvp.onrender.com/products/${productId}/decrement`, {
+      const res = await fetch(`https://ecommerce-web-li75.onrender.com/products/${productId}/decrement`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ quantity: quantityChange }),
@@ -58,7 +58,7 @@ export const CartProvider: React.FC<{ children: ReactNode; setProducts: React.Di
 
   const restoreStockBackend = async (productId: number, quantity: number) => {
     try {
-      const res = await fetch(`https://ecommerce-web-1-vlvp.onrender.com/products/${productId}/increment`, {
+      const res = await fetch(`https://ecommerce-web-li75.onrender.com/products/${productId}/increment`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ quantity }),

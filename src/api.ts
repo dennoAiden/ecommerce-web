@@ -1,7 +1,7 @@
 // src/api.ts
 import type { Product } from "./types";
 
-const BASE = import.meta.env.VITE_API_BASE ?? "https://ecommerce-web-1-vlvp.onrender.com";
+const BASE = import.meta.env.VITE_API_BASE ?? "https://ecommerce-web-li75.onrender.com";
 
 export async function fetchProducts(category?: string): Promise<Product[]> {
   try {
