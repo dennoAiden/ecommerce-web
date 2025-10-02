@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import productsRouter from "./routes/products"; 
+
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -13,6 +15,9 @@ app.use(cors({
   credentials: true, 
 }));
 
+app.use(express.json());
+
+app.use("/products", productsRouter);
 app.get("/", (req, res) => {
   res.send("Backend API running 🚀");
 });
