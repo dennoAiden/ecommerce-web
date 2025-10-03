@@ -34,17 +34,14 @@ const App: React.FC = () => {
           <CartWidget />
         </header>
 
-        {/* Main content with padding to offset fixed header */}
         <main className="flex-1 p-4 sm:p-6 mt-20">
           <ProductList products={products} openProductDetails={openProductDetails} />
         </main>
 
-        {/* Footer */}
         <footer className="text-center py-4 bg-gray-100 text-gray-600 text-sm mt-auto">
           © {new Date().getFullYear()} Laptop Store. All rights reserved.
         </footer>
 
-        {/* Product Details Modal */}
         {selectedProduct && (
           <ProductDetails product={selectedProduct} onClose={closeProductDetails} />
         )}

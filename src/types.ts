@@ -13,5 +13,5 @@ export type Product = {
   stock: number;
   category: string;
   features?: string[];
-  variants?: Variant[] | string; // can come as array or string
+  variants?: Variant[] | string;
 };

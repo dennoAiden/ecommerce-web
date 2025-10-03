@@ -4,16 +4,16 @@ import type { Product } from "../types";
 export interface CartItem {
   product: Product;
   quantity: number;
-  selectedVariantId?: number;
-  selectedVariantName?: string;
+  selectedVariantId: number;
+  selectedVariantName: string;
 }
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: Product, variantId?: number, variantName?: string) => void;
-  removeFromCart: (productId: number, variantId?: number) => void;
-  increment: (productId: number, variantId?: number) => void;
-  decrement: (productId: number, variantId?: number) => void;
+  addToCart: (product: Product, variantId: number, variantName: string) => void;
+  removeFromCart: (productId: number, variantId: number) => void;
+  increment: (productId: number, variantId: number) => void;
+  decrement: (productId: number, variantId: number) => void;
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
 }
 
@@ -25,7 +25,10 @@ export const useCart = () => {
   return context;
 };
 
-export const CartProvider: React.FC<{ children: ReactNode; setProducts: React.Dispatch<React.SetStateAction<Product[]>> }> = ({ children, setProducts }) => {
+export const CartProvider: React.FC<{
+  children: ReactNode;
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+}> = ({ children, setProducts }) => {
   const [cart, setCart] = useState<CartItem[]>(() => {
     const savedCart = localStorage.getItem("cart");
     return savedCart ? JSON.parse(savedCart) : [];
@@ -37,18 +40,23 @@ export const CartProvider: React.FC<{ children: ReactNode; setProducts: React.Di
 
   const updateStockBackend = async (productId: number, quantityChange: number) => {
     try {
-      const res = await fetch(`https://ecommerce-web-backend-x9o7.onrender.com/products/${productId}/decrement`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quantity: quantityChange }),
-      });
+      const res = await fetch(
+        `https://ecommerce-web-backend-x9o7.onrender.com/products/${productId}/decrement`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ quantity: quantityChange }),
+        }
+      );
       if (!res.ok) {
         const text = await res.text();
         console.error("Failed to update stock:", text);
         return null;
       }
       const updatedProduct: Product = await res.json();
-      setProducts(prev => prev.map(p => (p.id === updatedProduct.id ? updatedProduct : p)));
+      setProducts((prev) =>
+        prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
+      );
       return updatedProduct;
     } catch (err) {
       console.error(err);
@@ -58,18 +66,23 @@ export const CartProvider: React.FC<{ children: ReactNode; setProducts: React.Di
 
   const restoreStockBackend = async (productId: number, quantity: number) => {
     try {
-      const res = await fetch(`https://ecommerce-web-backend-x9o7.onrender.com/products/${productId}/increment`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quantity }),
-      });
+      const res = await fetch(
+        `https://ecommerce-web-backend-x9o7.onrender.com/products/${productId}/increment`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ quantity }),
+        }
+      );
       if (!res.ok) {
         const text = await res.text();
         console.error("Failed to restore stock:", text);
         return null;
       }
       const updatedProduct: Product = await res.json();
-      setProducts(prev => prev.map(p => (p.id === updatedProduct.id ? updatedProduct : p)));
+      setProducts((prev) =>
+        prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
+      );
       return updatedProduct;
     } catch (err) {
       console.error(err);
@@ -77,42 +90,63 @@ export const CartProvider: React.FC<{ children: ReactNode; setProducts: React.Di
     }
   };
 
-  const addToCart = async (product: Product, variantId?: number, variantName?: string) => {
+  // Add product to cart
+  const addToCart = async (product: Product, variantId: number, variantName: string) => {
     if (product.stock <= 0) return;
 
     const updatedProduct = await updateStockBackend(product.id, 1);
     if (!updatedProduct) return;
 
-    setCart(prev => {
-      const existing = prev.find(i => i.product.id === product.id && i.selectedVariantId === variantId);
+    setCart((prev) => {
+      const existing = prev.find(
+        (i) => i.product.id === product.id && i.selectedVariantId === variantId
+      );
+
       if (existing) {
-        return prev.map(i =>
+        return prev.map((i) =>
           i.product.id === product.id && i.selectedVariantId === variantId
             ? { ...i, quantity: i.quantity + 1, product: updatedProduct }
             : i
         );
       }
-      return [...prev, { product: updatedProduct, quantity: 1, selectedVariantId: variantId, selectedVariantName: variantName }];
+
+      return [
+        ...prev,
+        {
+          product: updatedProduct,
+          quantity: 1,
+          selectedVariantId: variantId,
+          selectedVariantName: variantName,
+        },
+      ];
     });
   };
 
-  const removeFromCart = async (productId: number, variantId?: number) => {
-    const item = cart.find(i => i.product.id === productId && i.selectedVariantId === variantId);
+  // Remove product from cart
+  const removeFromCart = async (productId: number, variantId: number) => {
+    const item = cart.find(
+      (i) => i.product.id === productId && i.selectedVariantId === variantId
+    );
     if (!item) return;
 
     await restoreStockBackend(productId, item.quantity);
-    setCart(prev => prev.filter(i => !(i.product.id === productId && i.selectedVariantId === variantId)));
+    setCart((prev) =>
+      prev.filter((i) => !(i.product.id === productId && i.selectedVariantId === variantId))
+    );
   };
 
-  const increment = async (productId: number, variantId?: number) => {
-    const item = cart.find(i => i.product.id === productId && i.selectedVariantId === variantId);
+  // Increment quantity
+  const increment = async (productId: number, variantId: number) => {
+    const item = cart.find(
+      (i) => i.product.id === productId && i.selectedVariantId === variantId
+    );
     if (!item || item.quantity >= item.product.stock) return;
 
     const updatedProduct = await updateStockBackend(productId, 1);
     if (!updatedProduct) return;
 
-    setCart(prev =>
-      prev.map(i =>
+    setCart((prev) =>
+      prev.map((i) =>
         i.product.id === productId && i.selectedVariantId === variantId
           ? { ...i, quantity: i.quantity + 1, product: updatedProduct }
           : i
@@ -120,25 +154,30 @@ export const CartProvider: React.FC<{ children: ReactNode; setProducts: React.Di
     );
   };
 
-  const decrement = async (productId: number, variantId?: number) => {
-    const item = cart.find(i => i.product.id === productId && i.selectedVariantId === variantId);
+  // Decrement quantity
+  const decrement = async (productId: number, variantId: number) => {
+    const item = cart.find(
+      (i) => i.product.id === productId && i.selectedVariantId === variantId
+    );
     if (!item) return;
 
     await restoreStockBackend(productId, 1);
 
-    setCart(prev =>
+    setCart((prev) =>
       prev
-        .map(i =>
+        .map((i) =>
           i.product.id === productId && i.selectedVariantId === variantId && i.quantity > 1
             ? { ...i, quantity: i.quantity - 1 }
             : i
         )
-        .filter(i => i.quantity > 0)
+        .filter((i) => i.quantity > 0)
     );
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, increment, decrement, setProducts }}>
+    <CartContext.Provider
+      value={{ cart, addToCart, removeFromCart, increment, decrement, setProducts }}
+    >
       {children}
     </CartContext.Provider>
   );
